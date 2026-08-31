@@ -1,6 +1,4 @@
-// Point this at your deployed signaling server.
-// For local testing, leave as-is (assumes server running on localhost:4000).
-window.SIGNALING_SERVER_URL = "http://localhost:4000";
+window.SIGNALING_SERVER_URL = "https://remoteshare-ykpm.onrender.com";
 
 // Free public STUN server (no account needed). Good enough for most home/office networks.
 // If two peers are behind strict NAT/firewalls, you may need a free TURN server too —
