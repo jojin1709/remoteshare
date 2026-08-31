@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RemoteShare — Desktop-Class App Icons</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #111418;
+    color: #f0f6fc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  p.sub {
+    color: #94a3b8;
+    font-size: 14px;
+    margin-bottom: 40px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    width: 100%;
+  }
+  .card {
+    background: #1a1f26;
+    border: 1px solid #2d3748;
+    border-radius: 18px;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: #60a5fa;
+  }
+  .icon-box {
+    width: 128px;
+    height: 128px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+  }
+  .name {
+    font-size: 19px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .desc {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.4;
+    margin-bottom: 14px;
+  }
+  .tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: #252e3d;
+    color: #60a5fa;
+    border: 1px solid #3b82f6;
+  }
+  
+  /* Desktop Mockup Preview */
+  .desktop-preview {
+    margin-top: 50px;
+    background: #1e2631;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 24px 30px;
+    max-width: 800px;
+    width: 100%;
+  }
+  .desktop-preview h2 { font-size: 16px; color: #cbd5e1; margin-bottom: 20px; font-weight: 600; text-align: center; }
+  .desktop-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    gap: 20px;
+  }
+  .desktop-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .desktop-item svg { width: 56px; height: 56px; }
+  .desktop-item span { font-size: 12px; color: #e2e8f0; text-shadow: 0 1px 2px #000; }
+</style>
+</head>
+<body>
+
+<h1>RemoteShare — Desktop Brand Icons</h1>
+<p class="sub">Bold, standalone vector brand marks (Proton / Burp / VirtualBox tier)</p>
+
+<div class="grid">
+
+  <!-- Style 1: Proton-style 3D Prism Delta -->
+  <div class="card">
+    <div class="icon-box">
+      <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="prism1" x1="20" y1="18" x2="108" y2="110" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6366F1"/>
+            <stop offset="0.5" stop-color="#8B5CF6"/>
+            <stop offset="1" stop-color="#06B6D4"/>
+          </linearGradient>
+          <linearGradient id="prism2" x1="108" y1="18" x2="20" y2="110" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#38BDF8"/>
+            <stop offset="1" stop-color="#4F46E5"/>
+          </linearGradient>
+        </defs>
+        <!-- Dynamic Folded Prism Delta (Proton VPN style) -->
+        <path d="M64 16L112 98C114 102 110 108 105 108H23C18 108 14 102 16 98L64 16Z" fill="url(#prism1)"/>
+        <!-- Glass Facet Overlay -->
+        <path d="M64 16L105 108H64L42 66L64 16Z" fill="url(#prism2)" fill-opacity="0.8"/>
+        <!-- Inner Signal Core -->
+        <path d="M64 42L86 88H42L64 42Z" fill="#0B1120"/>
+        <circle cx="64" cy="72" r="7" fill="#38BDF8"/>
+      </svg>
+    </div>
+    <div class="name">1. Prism Delta</div>
+    <div class="desc">Bold 3D gradient prism with interconnected triangular sharing core. (ProtonVPN style)</div>
+    <span class="tag">Modern 3D Prism</span>
+  </div>
+
+  <!-- Style 2: Burp Suite Pro style Bold Bolt Square -->
+  <div class="card">
+    <div class="icon-box">
+      <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="boltBg" x1="0" y1="0" x2="128" y2="128">
+            <stop stop-color="#2563EB"/>
+            <stop offset="1" stop-color="#1D4ED8"/>
+          </linearGradient>
+        </defs>
+        <!-- Sharp Solid App Tile (Burp Suite / Adobe style) -->
+        <rect width="128" height="128" rx="28" fill="url(#boltBg)"/>
+        <!-- Bold Sharp Lightning Share Glyph -->
+        <path d="M72 18L36 68H66L56 110L92 60H62L72 18Z" fill="#FFFFFF"/>
+      </svg>
+    </div>
+    <div class="name">2. Electric Bold Bolt</div>
+    <div class="desc">Vibrant royal blue solid badge with crisp, high-contrast white lightning power bolt. (Burp Suite style)</div>
+    <span class="tag">High-Contrast Solid</span>
+  </div>
+
+  <!-- Style 3: Clean Interlocking Screen Loops (VirtualBox / AnyDesk style) -->
+  <div class="card">
+    <div class="icon-box">
+      <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="vCyan" x1="0" y1="0" x2="1" y2="1">
+            <stop stop-color="#00D2FF"/>
+            <stop offset="1" stop-color="#0066FF"/>
+          </linearGradient>
+          <linearGradient id="vOrange" x1="0" y1="0" x2="1" y2="1">
+            <stop stop-color="#FF9900"/>
+            <stop offset="1" stop-color="#FF5500"/>
+          </linearGradient>
+        </defs>
+        <!-- Bold Geometric Interlocking Loop (Oracle VirtualBox / AnyDesk style) -->
+        <path d="M22 36C22 28 28 22 36 22H60V42H42V86H60V106H36C28 106 22 100 22 92V36Z" fill="url(#vCyan)"/>
+        <path d="M106 92C106 100 100 106 92 106H68V86H86V42H68V22H92C100 22 106 28 106 36V92Z" fill="url(#vOrange)"/>
+        <rect x="52" y="52" width="24" height="24" rx="6" fill="#FFFFFF"/>
+      </svg>
+    </div>
+    <div class="name">3. Dual Link Blocks</div>
+    <div class="desc">Two bold interlocking cyan & amber portal brackets with central sync cube. (VirtualBox style)</div>
+    <span class="tag">Geometric Enterprise</span>
+  </div>
+
+</div>
+
+<!-- Desktop Icon Preview -->
+<div class="desktop-preview">
+  <h2>How it looks on your Windows Desktop (Actual Size):</h2>
+  <div class="desktop-row">
+    <div class="desktop-item">
+      <svg viewBox="0 0 128 128" fill="none">
+        <path d="M64 16L112 98C114 102 110 108 105 108H23C18 108 14 102 16 98L64 16Z" fill="url(#prism1)"/>
+        <path d="M64 16L105 108H64L42 66L64 16Z" fill="url(#prism2)" fill-opacity="0.8"/>
+        <circle cx="64" cy="72" r="7" fill="#38BDF8"/>
+      </svg>
+      <span>Prism Delta</span>
+    </div>
+
+    <div class="desktop-item">
+      <svg viewBox="0 0 128 128" fill="none">
+        <rect width="128" height="128" rx="28" fill="url(#boltBg)"/>
+        <path d="M72 18L36 68H66L56 110L92 60H62L72 18Z" fill="#FFFFFF"/>
+      </svg>
+      <span>Electric Bolt</span>
+    </div>
+
+    <div class="desktop-item">
+      <svg viewBox="0 0 128 128" fill="none">
+        <path d="M22 36C22 28 28 22 36 22H60V42H42V86H60V106H36C28 106 22 100 22 92V36Z" fill="url(#vCyan)"/>
+        <path d="M106 92C106 100 100 106 92 106H68V86H86V42H68V22H92C100 22 106 28 106 36V92Z" fill="url(#vOrange)"/>
+        <rect x="52" y="52" width="24" height="24" rx="6" fill="#FFFFFF"/>
+      </svg>
+      <span>Dual Link</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

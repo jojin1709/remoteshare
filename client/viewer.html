@@ -3,13 +3,23 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Remote Share — Viewer</title>
+<title>RemoteShare — Viewer</title>
+<link rel="icon" type="image/png" href="favicon.png" />
 <link rel="stylesheet" href="style.css" />
+<style>
+  .brand-logo { width: 24px; height: 24px; border-radius: 6px; margin-right: 8px; vertical-align: middle; }
+  .toolbar-actions { display: flex; gap: 10px; align-items: center; }
+  .btn-sm { padding: 6px 12px; font-size: 13px; border-radius: 6px; }
+  #remoteVideo { max-height: 80vh; width: 100%; object-fit: contain; background: #000; border-radius: 8px; }
+</style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="brand"><span class="dot"></span> Remote Share</div>
+  <div class="brand">
+    <img src="icon.png" class="brand-logo" alt="RemoteShare" />
+    RemoteShare
+  </div>
   <span class="status-pill status-idle" id="statusPill">
     <span class="dot"></span> <span id="statusText">Not connected</span>
   </span>
@@ -18,32 +28,38 @@
 <div class="container">
 
   <div class="card" id="joinCard">
-    <h1>Connect to a session</h1>
-    <p class="sub">Enter the 6-digit code shown on the host's screen.</p>
+    <h1>Connect to a Session</h1>
+    <p class="sub">Enter the 6-digit code shown on the host machine.</p>
     <div class="row">
-      <input type="text" id="codeInput" maxlength="6" placeholder="123456" autofocus />
+      <input type="text" id="codeInput" maxlength="6" placeholder="123456" autofocus autocomplete="off" />
       <button class="btn btn-primary" id="joinBtn">Connect</button>
     </div>
     <div class="error-box" id="errorBox"></div>
   </div>
 
-  <div class="card" id="stageCard" style="display:none;">
+  <div class="card" id="stageCard" style="display:none; max-width: 1200px; width: 95vw;">
     <div class="stage" id="stage">
       <video id="remoteVideo" autoplay playsinline></video>
-      <div class="placeholder" id="waitingMsg">Waiting for host's screen…</div>
+      <div class="placeholder" id="waitingMsg">
+        <span class="dot" style="background:#38bdf8; animation: pulse 1.5s infinite;"></span>
+        Connecting direct peer-to-peer video stream…
+      </div>
     </div>
     <div class="toolbar">
       <label class="toggle">
         <input type="checkbox" id="controlToggle" />
         Enable remote control (mouse & keyboard)
       </label>
-      <button class="btn btn-outline" id="disconnectBtn">Disconnect</button>
+      <div class="toolbar-actions">
+        <button class="btn btn-outline btn-sm" id="fullscreenBtn">Fullscreen</button>
+        <button class="btn btn-outline btn-sm" id="disconnectBtn">Disconnect</button>
+      </div>
     </div>
   </div>
 
 </div>
 
-<footer>Peer-to-peer via WebRTC · Nothing is stored on any server</footer>
+<footer>Peer-to-peer via WebRTC · End-to-End Encrypted · Developed by <a href="https://github.com/jojin1709" target="_blank" style="color:#58a6ff; text-decoration:none; font-weight:600;">JOJIN JOHN</a></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4/dist/socket.io.min.js"></script>
 <script src="config.js"></script>

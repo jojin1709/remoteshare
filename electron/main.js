@@ -1,9 +1,6 @@
 const { app, BrowserWindow, ipcMain, desktopCapturer, screen } = require("electron");
 const path = require("path");
 
-// robotjs is a native module — simulates real OS-level mouse/keyboard input.
-// If it fails to load (e.g. not rebuilt for this Electron version), the app
-// still runs fine for screen SHARING; only remote CONTROL will be disabled.
 let robot = null;
 try {
   robot = require("robotjs");
@@ -12,14 +9,35 @@ try {
 }
 
 let mainWindow;
+let splashWindow;
 
-function createWindow() {
+function createSplashWindow() {
+  splashWindow = new BrowserWindow({
+    width: 340,
+    height: 380,
+    transparent: true,
+    frame: false,
+    alwaysOnTop: true,
+    center: true,
+    resizable: false,
+    icon: path.join(__dirname, "icon.png"),
+    webPreferences: {
+      nodeIntegration: false,
+    },
+  });
+
+  splashWindow.loadFile(path.join(__dirname, "splash.html"));
+}
+
+function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 480,
     height: 720,
     resizable: false,
+    show: false,
     autoHideMenuBar: true,
     title: "RemoteShare — Host",
+    icon: path.join(__dirname, "icon.png"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -28,9 +46,22 @@ function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, "host.html"));
+
+  mainWindow.once("ready-to-show", () => {
+    // Show splash for minimum 1.2s for smooth experience, then fade to main window
+    setTimeout(() => {
+      if (splashWindow && !splashWindow.isDestroyed()) {
+        splashWindow.close();
+      }
+      mainWindow.show();
+    }, 1200);
+  });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createSplashWindow();
+  createMainWindow();
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
@@ -40,12 +71,12 @@ app.on("window-all-closed", () => {
 ipcMain.handle("get-screen-sources", async () => {
   const sources = await desktopCapturer.getSources({
     types: ["screen"],
-    thumbnailSize: { width: 300, height: 200 },
+    thumbnailSize: { width: 320, height: 180 },
   });
   return sources.map((s) => ({ id: s.id, name: s.name, thumbnail: s.thumbnail.toDataURL() }));
 });
 
-// ---- Execute remote-control events sent from the viewer (relayed via renderer) ----
+// ---- Execute remote-control events sent from the viewer ----
 ipcMain.on("remote-input", (_event, payload) => {
   if (!robot) return;
 
@@ -87,7 +118,6 @@ ipcMain.on("remote-input", (_event, payload) => {
   }
 });
 
-// Map browser KeyboardEvent.key values to robotjs key names
 function mapKey(key) {
   const map = {
     " ": "space",
@@ -105,6 +135,6 @@ function mapKey(key) {
     Delete: "delete",
   };
   if (map[key]) return map[key];
-  if (key.length === 1) return key.toLowerCase();
+  if (key && key.length === 1) return key.toLowerCase();
   return null;
 }

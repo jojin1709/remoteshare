@@ -1,11 +1,14 @@
 {
   "name": "remote-share-host",
   "version": "1.0.0",
-  "description": "Free remote screen sharing host app (like AnyDesk), built with Electron + WebRTC",
+  "description": "RemoteShare Host — Ultra-Fast Free Screen Sharing",
   "main": "main.js",
+  "author": "JOJIN JOHN",
   "scripts": {
     "start": "electron .",
-    "build:win": "electron-builder --win portable"
+    "build:installer": "electron-builder --win nsis",
+    "build:portable": "electron-builder --win portable",
+    "build:win": "electron-builder --win nsis portable"
   },
   "build": {
     "appId": "com.jojin.remoteshare",
@@ -13,15 +16,31 @@
     "npmRebuild": false,
     "nodeGypRebuild": false,
     "directories": {
-      "output": "release"
+      "output": "build-output"
     },
     "win": {
-      "target": "portable"
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "RemoteShare",
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico",
+      "deleteAppDataOnUninstall": true,
+      "runAfterFinish": true
     },
     "files": [
       "**/*",
-      "!dist/*",
-      "!release/*"
+      "!build-output/*",
+      "!release/*",
+      "!dist/*"
     ]
   },
   "dependencies": {

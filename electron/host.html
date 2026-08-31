@@ -5,32 +5,44 @@
 <title>RemoteShare — Host</title>
 <link rel="stylesheet" href="style.css" />
 <style>
-  body { padding-bottom: 0; }
-  .container { padding: 28px 20px; max-width: 440px; }
-  .source-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+  body { padding-bottom: 0; user-select: none; }
+  .container { padding: 24px 20px; max-width: 440px; }
+  .brand-logo { width: 26px; height: 26px; border-radius: 6px; margin-right: 8px; vertical-align: middle; }
+  .source-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; max-height: 260px; overflow-y: auto; }
   .source-card {
-    border: 1px solid var(--border); border-radius: 10px; padding: 8px; cursor: pointer;
-    background: var(--bg); text-align: center; transition: border-color .15s;
+    border: 1.5px solid var(--border); border-radius: 10px; padding: 8px; cursor: pointer;
+    background: var(--card-bg, #161b22); text-align: center; transition: all .15s ease;
   }
-  .source-card.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .source-card:hover { border-color: #38bdf8; transform: translateY(-2px); }
+  .source-card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); background: rgba(37,99,235,0.12); }
   .source-card img { width: 100%; border-radius: 6px; display: block; margin-bottom: 6px; }
-  .source-card span { font-size: 12px; color: var(--text-dim); }
+  .source-card span { font-size: 12px; color: var(--text-dim); font-weight: 500; }
+  .code-container { display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 16px 0; }
+  .btn-group { display: flex; gap: 10px; width: 100%; justify-content: center; }
+  .btn-sm { padding: 8px 14px; font-size: 13px; font-weight: 600; border-radius: 8px; cursor: pointer; }
+  .cloud-status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .cloud-status-dot.online { background: #10b981; box-shadow: 0 0 8px #10b981; }
+  .cloud-status-dot.offline { background: #ef4444; }
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="brand"><span class="dot"></span> RemoteShare Host</div>
+  <div class="brand">
+    <img src="icon.png" class="brand-logo" alt="RemoteShare" />
+    RemoteShare
+  </div>
   <span class="status-pill status-idle" id="statusPill">
-    <span class="dot"></span> <span id="statusText">Not sharing</span>
+    <span class="cloud-status-dot online" id="cloudDot"></span>
+    <span id="statusText">Ready</span>
   </span>
 </div>
 
 <div class="container">
 
   <div class="card" id="setupCard">
-    <h1>Choose what to share</h1>
-    <p class="sub">Pick a screen, then start your session.</p>
+    <h1>Select Screen to Share</h1>
+    <p class="sub">Choose a monitor or window to begin your P2P session.</p>
     <div class="source-grid" id="sourceGrid"></div>
     <div class="row">
       <button class="btn btn-primary" id="startBtn" disabled>Start Session</button>
@@ -39,10 +51,16 @@
   </div>
 
   <div class="card" id="sessionCard" style="display:none;">
-    <h1>Your session code</h1>
-    <p class="sub">Share this code with the person you want to give access to.</p>
-    <div class="code-display" id="codeDisplay">------</div>
-    <p class="hint">Anyone with this code and the viewer link can view/control this screen.</p>
+    <h1>Your Session Code</h1>
+    <p class="sub">Give this code or direct link to the remote viewer.</p>
+    <div class="code-container">
+      <div class="code-display" id="codeDisplay">------</div>
+      <div class="btn-group">
+        <button class="btn btn-outline btn-sm" id="copyBtn">Copy Code</button>
+        <button class="btn btn-outline btn-sm" id="copyLinkBtn">Copy Share Link</button>
+      </div>
+    </div>
+    <p class="hint">Encrypted peer-to-peer stream via WebRTC. Direct & private.</p>
     <div class="toolbar">
       <span class="status-pill status-waiting" id="viewerStatusPill">
         <span class="dot"></span> <span id="viewerStatusText">Waiting for someone to connect…</span>
