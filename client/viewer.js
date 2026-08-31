@@ -48,13 +48,16 @@
   });
 
   socket.on("connect_error", (err) => {
-    console.warn("[Viewer] Signaling server connection error:", err.message);
+    console.warn("[Viewer] Connection error:", err.message);
   });
 
   function createPeerConnection() {
+    if (pc) {
+      try { pc.close(); } catch (e) {}
+    }
+
     const peer = new RTCPeerConnection({
       iceServers: window.ICE_SERVERS,
-      sdpSemantics: "unified-plan",
     });
 
     peer.ontrack = (event) => {
@@ -62,37 +65,43 @@
       if (event.streams && event.streams[0]) {
         remoteVideo.srcObject = event.streams[0];
       } else {
-        const stream = new MediaStream([event.track]);
-        remoteVideo.srcObject = stream;
+        remoteVideo.srcObject = new MediaStream([event.track]);
       }
-      remoteVideo.play().catch((e) => console.warn("Video auto-play warning:", e));
-      waitingMsg.style.display = "none";
-      setStatus("connected", "Connected (P2P)");
+      remoteVideo.muted = true;
+      remoteVideo.play().then(() => {
+        if (waitingMsg) waitingMsg.style.display = "none";
+        setStatus("connected", "Live Streaming");
+      }).catch((err) => {
+        console.warn("[Viewer] Video play notice:", err.message);
+        if (waitingMsg) waitingMsg.style.display = "none";
+      });
     };
 
     peer.onicecandidate = (event) => {
       if (event.candidate) {
         socket.emit("signal", {
           code: currentCode,
-          data: { type: "ice-candidate", candidate: event.candidate },
+          data: { type: "ice-candidate", candidate: event.candidate.toJSON ? event.candidate.toJSON() : event.candidate },
         });
       }
     };
 
     peer.oniceconnectionstatechange = () => {
-      console.log("[Viewer] ICE State:", peer.iceConnectionState);
+      console.log("[Viewer] ICE connection state:", peer.iceConnectionState);
       if (peer.iceConnectionState === "connected" || peer.iceConnectionState === "completed") {
         setStatus("connected", "Live Streaming");
-        waitingMsg.style.display = "none";
-      } else if (["disconnected", "failed", "closed"].includes(peer.iceConnectionState)) {
-        setStatus("error", "Connection Interrupted");
+        if (waitingMsg) waitingMsg.style.display = "none";
+      } else if (peer.iceConnectionState === "failed") {
+        setStatus("error", "Reconnecting P2P…");
+        if (peer.restartIce) peer.restartIce();
+      } else if (peer.iceConnectionState === "disconnected") {
+        setStatus("waiting", "Reconnecting…");
       }
     };
 
-    // Host creates the data channel; viewer listens
     peer.ondatachannel = (event) => {
       dataChannel = event.channel;
-      dataChannel.onopen = () => console.log("[Viewer] Remote control channel open");
+      dataChannel.onopen = () => console.log("[Viewer] Remote control channel active");
     };
 
     return peer;
@@ -104,7 +113,7 @@
     }
   }
 
-  // ----- Remote control input capture -----
+  // Remote control capture
   function attachControlListeners() {
     remoteVideo.addEventListener("mousemove", (e) => {
       const rect = remoteVideo.getBoundingClientRect();
@@ -146,7 +155,6 @@
     });
   }
 
-  // Fullscreen support
   if (fullscreenBtn) {
     fullscreenBtn.addEventListener("click", () => {
       if (!document.fullscreenElement) {
@@ -159,7 +167,7 @@
     });
   }
 
-  // ----- Join flow -----
+  // Join flow
   joinBtn.addEventListener("click", joinSession);
   codeInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") joinSession();
@@ -174,7 +182,7 @@
     }
     currentCode = code;
     joinBtn.disabled = true;
-    setStatus("waiting", "Connecting…");
+    setStatus("waiting", "Connecting to Host…");
 
     socket.emit("viewer:join", { code }, (res) => {
       joinBtn.disabled = false;
@@ -185,49 +193,52 @@
       }
       joinCard.style.display = "none";
       stageCard.style.display = "block";
-      setStatus("waiting", "Handshaking with host…");
+      setStatus("waiting", "Establishing direct WebRTC stream…");
       pc = createPeerConnection();
       pendingCandidates = [];
     });
   }
 
-  // ----- Signaling -----
+  // WebRTC Signal Processing
   socket.on("signal", async ({ data }) => {
     if (!pc) pc = createPeerConnection();
 
     if (data.type === "offer") {
       try {
-        await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
-        // Flush any buffered ICE candidates received before the offer was set
+        console.log("[Viewer] Received WebRTC offer from host");
+        const sdp = typeof data.sdp === "string" ? data.sdp : (data.sdp.sdp || data.sdp);
+        await pc.setRemoteDescription(new RTCSessionDescription({ type: "offer", sdp: sdp }));
+        
+        // Flush all buffered ICE candidates
         while (pendingCandidates.length > 0) {
-          const candidate = pendingCandidates.shift();
+          const c = pendingCandidates.shift();
           try {
-            await pc.addIceCandidate(new RTCIceCandidate(candidate));
+            await pc.addIceCandidate(new RTCIceCandidate(c));
           } catch (e) {}
         }
 
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
-        socket.emit("signal", { code: currentCode, data: { type: "answer", sdp: answer } });
+        socket.emit("signal", { code: currentCode, data: { type: "answer", sdp: answer.sdp } });
+        console.log("[Viewer] Sent WebRTC answer to host");
       } catch (err) {
-        console.error("Failed to process offer:", err);
+        console.error("[Viewer] Offer processing error:", err);
       }
     } else if (data.type === "ice-candidate" && data.candidate) {
       if (pc.remoteDescription && pc.remoteDescription.type) {
         try {
           await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
         } catch (err) {
-          console.warn("ICE candidate error:", err);
+          console.warn("[Viewer] ICE candidate error:", err);
         }
       } else {
-        // Buffer candidate until remote offer is processed
         pendingCandidates.push(data.candidate);
       }
     }
   });
 
   socket.on("session:ended", ({ reason }) => {
-    setStatus("error", reason || "Session ended");
+    setStatus("error", reason || "Session ended by host");
     cleanupAndReset();
   });
 
@@ -237,23 +248,23 @@
 
   function cleanupAndReset() {
     if (pc) {
-      pc.close();
+      try { pc.close(); } catch (e) {}
       pc = null;
     }
     pendingCandidates = [];
     remoteVideo.srcObject = null;
-    waitingMsg.style.display = "flex";
+    if (waitingMsg) waitingMsg.style.display = "flex";
     stageCard.style.display = "none";
     joinCard.style.display = "block";
     codeInput.value = "";
     setStatus("idle", "Not connected");
   }
 
-  // Check URL parameters for ?code=XXXXXX for 1-click connection
+  // Auto-fill and connect from URL query param (?code=XXXXXX)
   const urlParams = new URLSearchParams(window.location.search);
   const codeParam = urlParams.get("code");
   if (codeParam && /^\d{6}$/.test(codeParam)) {
     codeInput.value = codeParam;
-    setTimeout(() => joinSession(), 300);
+    setTimeout(() => joinSession(), 350);
   }
 })();

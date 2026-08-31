@@ -66,7 +66,7 @@
     if (cloudDot) cloudDot.className = "cloud-status-dot offline";
   });
 
-  // ---- Load available screens to share ----
+  // Load available screens
   async function loadSources() {
     try {
       const sources = await window.electronAPI.getScreenSources();
@@ -93,7 +93,7 @@
   }
   loadSources();
 
-  // ---- Start sharing ----
+  // Start sharing
   startBtn.addEventListener("click", async () => {
     clearError();
     startBtn.disabled = true;
@@ -121,7 +121,7 @@
 
     socket.emit("host:create", {}, (res) => {
       if (!res.success) {
-        showError("Could not connect to signaling server. Please check internet connection.");
+        showError("Could not connect to signaling server. Please check your internet connection.");
         startBtn.disabled = false;
         return;
       }
@@ -134,22 +134,25 @@
     });
   });
 
-  // ---- A viewer connected: create offer ----
+  // A viewer connected: create offer
   socket.on("viewer:connected", async () => {
+    console.log("[Host] Viewer connected. Starting WebRTC peer connection...");
     setViewerStatus("waiting", "Viewer handshaking…");
     pc = createPeerConnection();
     pendingCandidates = [];
 
     // Add media tracks
     localStream.getTracks().forEach((track) => {
+      console.log("[Host] Adding track to PC:", track.kind, track.label);
       pc.addTrack(track, localStream);
     });
 
-    // Create reliable data channel for remote input control
+    // Create remote control data channel
     try {
       dataChannel = pc.createDataChannel("control", { ordered: true });
       dataChannel.onopen = () => {
-        setStatus("connected", "Sharing");
+        console.log("[Host] Data channel open");
+        setStatus("connected", "Streaming (Direct P2P)");
         setViewerStatus("connected", "Viewer connected (Active)");
       };
       dataChannel.onmessage = (event) => {
@@ -163,43 +166,45 @@
     }
 
     try {
-      const offer = await pc.createOffer({
-        offerToReceiveVideo: false,
-        offerToReceiveAudio: false,
-      });
+      const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      socket.emit("signal", { code: currentCode, data: { type: "offer", sdp: offer } });
+      socket.emit("signal", { code: currentCode, data: { type: "offer", sdp: offer.sdp } });
+      console.log("[Host] Sent WebRTC offer to viewer");
     } catch (err) {
-      console.error("Failed to create offer:", err);
+      console.error("[Host] Failed to create offer:", err);
       showError("WebRTC handshake failed: " + err.message);
     }
   });
 
+  // Signal routing
   socket.on("signal", async ({ data }) => {
     if (!pc) return;
 
     if (data.type === "answer") {
       try {
-        await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
-        // Flush any buffered ICE candidates received before answer was set
+        console.log("[Host] Received WebRTC answer from viewer");
+        const sdp = typeof data.sdp === "string" ? data.sdp : (data.sdp.sdp || data.sdp);
+        await pc.setRemoteDescription(new RTCSessionDescription({ type: "answer", sdp: sdp }));
+        
+        // Flush buffered ICE candidates
         while (pendingCandidates.length > 0) {
           const candidate = pendingCandidates.shift();
           try {
             await pc.addIceCandidate(new RTCIceCandidate(candidate));
           } catch (e) {}
         }
+        console.log("[Host] Remote description set successfully");
       } catch (err) {
-        console.error("Failed to set remote answer description:", err);
+        console.error("[Host] Failed to set remote answer:", err);
       }
     } else if (data.type === "ice-candidate" && data.candidate) {
       if (pc.remoteDescription && pc.remoteDescription.type) {
         try {
           await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
         } catch (err) {
-          console.warn("ICE candidate error:", err);
+          console.warn("[Host] ICE candidate error:", err);
         }
       } else {
-        // Buffer candidate until remote description is ready
         pendingCandidates.push(data.candidate);
       }
     }
@@ -209,40 +214,44 @@
     setViewerStatus("waiting", "Viewer disconnected. Waiting for connection…");
     setStatus("waiting", "Sharing (Live)");
     if (pc) {
-      pc.close();
+      try { pc.close(); } catch (e) {}
       pc = null;
     }
   });
 
   function createPeerConnection() {
+    if (pc) {
+      try { pc.close(); } catch (e) {}
+    }
+
     const peer = new RTCPeerConnection({
       iceServers: window.ICE_SERVERS,
-      sdpSemantics: "unified-plan",
     });
 
     peer.onicecandidate = (event) => {
       if (event.candidate) {
         socket.emit("signal", {
           code: currentCode,
-          data: { type: "ice-candidate", candidate: event.candidate },
+          data: { type: "ice-candidate", candidate: event.candidate.toJSON ? event.candidate.toJSON() : event.candidate },
         });
       }
     };
 
     peer.oniceconnectionstatechange = () => {
-      console.log("[Host] ICE State:", peer.iceConnectionState);
+      console.log("[Host] ICE connection state:", peer.iceConnectionState);
       if (peer.iceConnectionState === "connected" || peer.iceConnectionState === "completed") {
         setStatus("connected", "Streaming (Direct P2P)");
         setViewerStatus("connected", "Viewer connected (Active)");
       } else if (peer.iceConnectionState === "failed") {
-        peer.restartIce();
+        setStatus("waiting", "Re-negotiating ICE…");
+        if (peer.restartIce) peer.restartIce();
       }
     };
 
     return peer;
   }
 
-  // ---- Copy helpers ----
+  // Copy helpers
   if (copyBtn) {
     copyBtn.addEventListener("click", () => {
       if (currentCode) {
@@ -264,7 +273,7 @@
     });
   }
 
-  // ---- Stop sharing ----
+  // Stop sharing
   stopBtn.addEventListener("click", () => {
     socket.emit("session:end", { code: currentCode });
     cleanup();
@@ -274,7 +283,7 @@
 
   function cleanup() {
     if (pc) {
-      pc.close();
+      try { pc.close(); } catch (e) {}
       pc = null;
     }
     if (localStream) {
@@ -285,7 +294,7 @@
     sessionCard.style.display = "none";
     setupCard.style.display = "block";
     startBtn.disabled = selectedSourceId === null;
-    setStatus("idle", "Not sharing");
+    setStatus("idle", "Ready");
     loadSources();
   }
 })();
