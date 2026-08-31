@@ -1,16 +1,24 @@
 # RemoteShare — Free AnyDesk-style Screen Sharing
 
+[![Download Windows Release](https://img.shields.io/badge/Download-Windows%20.exe-blue?style=for-the-badge&logo=windows)](https://github.com/jojin1709/remoteshare/releases/latest/download/RemoteShare-v1.0.0-Windows.exe)
+[![Live Web Viewer](https://img.shields.io/badge/Live-Web%20Viewer-green?style=for-the-badge)](https://remoteshare-ykpm.onrender.com/)
+
+### 🚀 Quick Start
+1. **Host (sharing screen):** Download & run [**RemoteShare-v1.0.0-Windows.exe**](https://github.com/jojin1709/remoteshare/releases/latest/download/RemoteShare-v1.0.0-Windows.exe) on Windows. Select your screen and click **Start Session** to get your 6-digit code.
+2. **Viewer (watching screen):** Open [**https://remoteshare-ykpm.onrender.com/**](https://remoteshare-ykpm.onrender.com/) in any browser (mobile or desktop), enter the 6-digit code, and connect!
+
+---
+
 100% free stack:
 - **WebRTC** — peer-to-peer video + control, no paid service
-- **Socket.io** — tiny signaling server (just relays connection handshakes, deploy free)
-- **Electron** — wraps the host side into a real Windows `.exe`
-- **robotjs** — simulates mouse/keyboard on the host so a viewer can remote-control it
+- **Socket.io** — tiny signaling server (hosted free on Render)
+- **Electron** — portable Windows `.exe` for the host
 
 ```
 remote-share/
-  server/     -> signaling server (Node + Socket.io)
-  client/     -> viewer.html — anyone opens this in a browser to VIEW/control a session
-  electron/   -> the HOST app — this is what becomes the .exe
+  server/     -> signaling server (Node + Socket.io, deployed on Render)
+  client/     -> viewer.html — web viewer for browsers
+  electron/   -> the HOST app — standalone Windows .exe
 ```
 
 Why two different pieces? Browsers won't let a webpage move your mouse or type on
