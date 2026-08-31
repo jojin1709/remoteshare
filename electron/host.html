@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>RemoteShare — Host</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  body { padding-bottom: 0; }
+  .container { padding: 28px 20px; max-width: 440px; }
+  .source-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+  .source-card {
+    border: 1px solid var(--border); border-radius: 10px; padding: 8px; cursor: pointer;
+    background: var(--bg); text-align: center; transition: border-color .15s;
+  }
+  .source-card.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .source-card img { width: 100%; border-radius: 6px; display: block; margin-bottom: 6px; }
+  .source-card span { font-size: 12px; color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> RemoteShare Host</div>
+  <span class="status-pill status-idle" id="statusPill">
+    <span class="dot"></span> <span id="statusText">Not sharing</span>
+  </span>
+</div>
+
+<div class="container">
+
+  <div class="card" id="setupCard">
+    <h1>Choose what to share</h1>
+    <p class="sub">Pick a screen, then start your session.</p>
+    <div class="source-grid" id="sourceGrid"></div>
+    <div class="row">
+      <button class="btn btn-primary" id="startBtn" disabled>Start Session</button>
+    </div>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <div class="card" id="sessionCard" style="display:none;">
+    <h1>Your session code</h1>
+    <p class="sub">Share this code with the person you want to give access to.</p>
+    <div class="code-display" id="codeDisplay">------</div>
+    <p class="hint">Anyone with this code and the viewer link can view/control this screen.</p>
+    <div class="toolbar">
+      <span class="status-pill status-waiting" id="viewerStatusPill">
+        <span class="dot"></span> <span id="viewerStatusText">Waiting for someone to connect…</span>
+      </span>
+      <button class="btn btn-danger" id="stopBtn">Stop Sharing</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/socket.io-client@4/dist/socket.io.min.js"></script>
+<script src="config.js"></script>
+<script src="host.js"></script>
+</body>
+</html>

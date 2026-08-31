@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Remote Share — Viewer</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> Remote Share</div>
+  <span class="status-pill status-idle" id="statusPill">
+    <span class="dot"></span> <span id="statusText">Not connected</span>
+  </span>
+</div>
+
+<div class="container">
+
+  <div class="card" id="joinCard">
+    <h1>Connect to a session</h1>
+    <p class="sub">Enter the 6-digit code shown on the host's screen.</p>
+    <div class="row">
+      <input type="text" id="codeInput" maxlength="6" placeholder="123456" autofocus />
+      <button class="btn btn-primary" id="joinBtn">Connect</button>
+    </div>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <div class="card" id="stageCard" style="display:none;">
+    <div class="stage" id="stage">
+      <video id="remoteVideo" autoplay playsinline></video>
+      <div class="placeholder" id="waitingMsg">Waiting for host's screen…</div>
+    </div>
+    <div class="toolbar">
+      <label class="toggle">
+        <input type="checkbox" id="controlToggle" />
+        Enable remote control (mouse & keyboard)
+      </label>
+      <button class="btn btn-outline" id="disconnectBtn">Disconnect</button>
+    </div>
+  </div>
+
+</div>
+
+<footer>Peer-to-peer via WebRTC · Nothing is stored on any server</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/socket.io-client@4/dist/socket.io.min.js"></script>
+<script src="config.js"></script>
+<script src="viewer.js"></script>
+</body>
+</html>

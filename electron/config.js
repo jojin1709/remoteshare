@@ -1,0 +1,11 @@
+// Point this at your deployed signaling server.
+// For local testing, leave as-is (assumes server running on localhost:4000).
+window.SIGNALING_SERVER_URL = "http://localhost:4000";
+
+// Free public STUN server (no account needed). Good enough for most home/office networks.
+// If two peers are behind strict NAT/firewalls, you may need a free TURN server too —
+// see README.md for how to add one (e.g. self-hosted coturn, or metered.ca's free tier).
+window.ICE_SERVERS = [
+  { urls: "stun:stun.l.google.com:19302" },
+  { urls: "stun:stun1.l.google.com:19302" },
+];

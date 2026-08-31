@@ -1,0 +1,29 @@
+{
+  "name": "remote-share-host",
+  "version": "1.0.0",
+  "description": "Free remote screen sharing host app (like AnyDesk), built with Electron + WebRTC",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "com.jojin.remoteshare",
+    "productName": "RemoteShare",
+    "win": {
+      "target": "portable",
+      "icon": "icon.ico"
+    },
+    "files": [
+      "**/*"
+    ]
+  },
+  "dependencies": {
+    "socket.io-client": "^4.7.5",
+    "robotjs": "^0.6.0"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  }
+}
