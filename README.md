@@ -1,113 +1,148 @@
-# RemoteShare — Free AnyDesk-style Screen Sharing
+> [!NOTE]
+> **[RemoteShare v1.0.0 is officially released!](https://github.com/jojin1709/remoteshare/releases/tag/v1.0.0)** — High-performance, 100% free AnyDesk & TeamViewer alternative powered by WebRTC.
 
-[![Download Windows Release](https://img.shields.io/badge/Download-Windows%20.exe-blue?style=for-the-badge&logo=windows)](https://github.com/jojin1709/remoteshare/releases/latest/download/RemoteShare-v1.0.0-Windows.exe)
-[![Live Web Viewer](https://img.shields.io/badge/Live-Web%20Viewer-green?style=for-the-badge)](https://remoteshare-ykpm.onrender.com/)
+<div align="center">
 
-### 🚀 Quick Start
-1. **Host (sharing screen):** Download & run [**RemoteShare-v1.0.0-Windows.exe**](https://github.com/jojin1709/remoteshare/releases/latest/download/RemoteShare-v1.0.0-Windows.exe) on Windows. Select your screen and click **Start Session** to get your 6-digit code.
-2. **Viewer (watching screen):** Open [**https://remoteshare-ykpm.onrender.com/**](https://remoteshare-ykpm.onrender.com/) in any browser (mobile or desktop), enter the 6-digit code, and connect!
+# ⚡ RemoteShare
+### Ultra-Fast, Free & Private Peer-to-Peer Screen Sharing
+
+[![Download Windows Release](https://img.shields.io/badge/Download-Windows%20.exe-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/jojin1709/remoteshare/releases/latest/download/RemoteShare-v1.0.0-Windows.exe)
+[![Live Web Viewer](https://img.shields.io/badge/Live-Web%20Viewer-00C7B7?style=for-the-badge&logo=googlechrome&logoColor=white)](https://remoteshare-ykpm.onrender.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+
+<br />
+
+**RemoteShare is a lightweight, zero-cost screen sharing solution designed for instant desktop-to-browser streaming without accounts, subscriptions, or telemetry.**
 
 ---
 
-100% free stack:
-- **WebRTC** — peer-to-peer video + control, no paid service
-- **Socket.io** — tiny signaling server (hosted free on Render)
-- **Electron** — portable Windows `.exe` for the host
+<a href="https://github.com/jojin1709/remoteshare/releases/latest/download/RemoteShare-v1.0.0-Windows.exe"><img src="https://img.shields.io/badge/📥_Download_Host_App_(Windows)-238636?style=for-the-badge" height="40" alt="Download Windows App"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://remoteshare-ykpm.onrender.com/"><img src="https://img.shields.io/badge/🌐_Open_Web_Viewer-1F6FEB?style=for-the-badge" height="40" alt="Open Web Viewer"></a>
 
+---
+
+</div>
+
+> [!TIP]
+> **Zero Installation for Viewers:** The viewer runs directly in any modern web browser (Chrome, Edge, Firefox, Safari, Mobile). No software or browser extensions are required to watch a shared screen.
+
+## Table of Contents
+
+- [What is RemoteShare?](#what-is-remote-share)
+- [Quick Start](#quick-start)
+- [Key Capabilities](#key-capabilities)
+- [Architecture](#architecture)
+- [Security and Privacy](#security-and-privacy)
+- [About the Developer](#about-the-developer)
+- [Common Questions](#common-questions)
+
+---
+
+## What is RemoteShare?
+
+**RemoteShare** is an autonomous peer-to-peer screen streaming platform built by **Jojin John**. It delivers sub-second latency screen sharing by establishing direct WebRTC connections between the host computer and any web viewer worldwide.
+
+Unlike proprietary tools like AnyDesk or TeamViewer that enforce subscription limits and route video through central servers, RemoteShare transfers all encrypted video data directly device-to-device.
+
+### Why RemoteShare?
+
+- **No Subscriptions or Time Limits:** Completely free with no commercial popups or session timers.
+- **Direct P2P Streaming:** Video frames flow directly between host and viewer via WebRTC.
+- **Instant Access:** Share a 6-digit session code, and the remote viewer connects in seconds.
+
+---
+
+## Quick Start
+
+### For Host (Sharing Your Screen)
+
+1. Download the standalone Windows application:
+   👉 [**Download RemoteShare-v1.0.0-Windows.exe**](https://github.com/jojin1709/remoteshare/releases/latest/download/RemoteShare-v1.0.0-Windows.exe)
+2. Run the application (no setup or installation required).
+3. Select the display you wish to share and click **Start Session**.
+4. Copy your unique **6-digit session code**.
+
+### For Viewer (Watching the Screen)
+
+1. Open the live web viewer in any browser:
+   👉 [**https://remoteshare-ykpm.onrender.com/**](https://remoteshare-ykpm.onrender.com/)
+2. Enter the **6-digit code** provided by the host.
+3. Click **Connect** to start viewing the live stream instantly.
+
+---
+
+## Key Capabilities
+
+- **Direct WebRTC P2P Pipeline:** High-framerate, ultra-low latency desktop streaming.
+- **Standalone Portable Binary:** Single `.exe` file that runs instantly without external dependencies.
+- **Universal Browser Compatibility:** Works across Windows, macOS, Linux, Android, and iOS browsers.
+- **Dynamic NAT Traversal:** Integrated public STUN servers for seamless connectivity across standard home and office networks.
+- **Privacy-Centric:** No video or screen data ever touches or gets stored on intermediate servers.
+
+---
+
+## Architecture
+
+RemoteShare uses a decoupled, lightweight signaling topology:
+
+```text
+  ┌────────────────────────┐                   ┌────────────────────────┐
+  │   Host Desktop App     │                   │   Web Browser Viewer   │
+  │ (RemoteShare.exe)      │                   │ (Chrome / Safari / etc)│
+  └───────────┬────────────┘                   └───────────┬────────────┘
+              │                                            │
+              │  1. Session handshake (Socket.io)          │
+              ├───────────────────┬────────────────────────┤
+              │                   │                        │
+              │                   ▼                        │
+              │        ┌──────────────────────┐            │
+              │        │   Signaling Server   │            │
+              │        │  (Render Cloud P2P)  │            │
+              │        └──────────────────────┘            │
+              │                                            │
+              │  2. Direct WebRTC P2P Video Stream         │
+              └────────────────────────────────────────────┘
 ```
-remote-share/
-  server/     -> signaling server (Node + Socket.io, deployed on Render)
-  client/     -> viewer.html — web viewer for browsers
-  electron/   -> the HOST app — standalone Windows .exe
-```
 
-Why two different pieces? Browsers won't let a webpage move your mouse or type on
-your keyboard (security). So the **host** (the machine being controlled) has to be a
-real desktop app — that's the Electron app. The **viewer** (the person watching/controlling)
-can just use a normal browser — no install needed for them.
+1. **Signaling:** The lightweight signaling server pairs the host and viewer using single-use 6-digit codes.
+2. **Direct P2P Link:** Once paired, the two devices establish a direct WebRTC stream. Video and audio go directly between devices.
 
 ---
 
-## 1. Run the signaling server
+## Security and Privacy
 
-```bash
-cd server
-npm install
-npm start
-```
-
-Runs on `http://localhost:4000`. This is the ONLY server involved, and it never
-sees your screen — it just passes small connection messages between host and viewer
-so they can talk directly (peer-to-peer).
-
-### Deploy it for free (so it works over the internet, not just your LAN)
-- **Render.com** → New Web Service → connect this `server/` folder → free tier works fine
-- **Railway.app** → same idea, free tier
-- Once deployed, you'll get a URL like `https://your-app.onrender.com`
-
-Then update `SIGNALING_SERVER_URL` in **both**:
-- `client/config.js`
-- `electron/config.js`
-
-to that deployed URL instead of `http://localhost:4000`.
+- **Zero-Knowledge Signaling:** The signaling server only brokers the connection; it never sees, buffers, or records your video stream.
+- **Ephemeral Session Codes:** Random 6-digit codes exist only while the session is active and expire immediately upon disconnect.
+- **End-to-End Encryption:** WebRTC peer-to-peer data channels and media tracks are encrypted by default using standard DTLS/SRTP encryption.
 
 ---
 
-## 2. Run the host app (the one being shared/controlled)
+## About the Developer
 
-```bash
-cd electron
-npm install
-npm start
-```
+<div align="center">
 
-This opens a small window: pick which screen to share → click **Start Session** →
-you get a 6-digit code. Give that code to whoever needs access.
+**Developed with ❤️ by [JOJIN JOHN](https://github.com/jojin1709)**
 
-> **Note on robotjs:** it's a native module, so `npm install` compiles it for your
-> Node/Electron version. If it fails to build, screen SHARING still works fine —
-> only remote CONTROL (mouse/keyboard) won't. To fix, install build tools:
-> ```
-> npm install -g windows-build-tools   (or install Visual Studio Build Tools + Python)
-> npm install robotjs
-> npx electron-rebuild
-> ```
+*Software Engineer · Cybersecurity Enthusiast · Full Stack Developer*
+
+[![GitHub: jojin1709](https://img.shields.io/badge/GitHub-jojin1709-181717?style=for-the-badge&logo=github)](https://github.com/jojin1709)
+
+</div>
 
 ---
 
-## 3. Viewer side (the person watching/controlling)
+## Common Questions
 
-Just open `client/viewer.html` in any browser (double-click it, or serve it with
-any static host — Netlify/Vercel/GitHub Pages all work free). Enter the 6-digit
-code from the host. Done — they see the screen live, and can tick
-**"Enable remote control"** to take over mouse/keyboard.
+### Does the person viewing my screen need to install anything?
+No. The viewer only needs a standard web browser (Chrome, Edge, Safari, Firefox) and the 6-digit code.
 
----
+### Is there any time limit on sharing?
+No. Sessions can run continuously for as long as you keep the host application open.
 
-## 4. Build the host app into a Windows `.exe`
+### Are my screen streams saved on any server?
+No. All screen captures are streamed peer-to-peer over encrypted WebRTC channels and are never stored anywhere.
 
-```bash
-cd electron
-npm install
-npm run build:win
-```
+<br />
 
-This uses `electron-builder` (free, open source) to produce a portable `.exe` in
-`electron/dist/`. Send that single file to anyone — they just double-click it,
-no install step, and it works like AnyDesk's host app.
-
----
-
-## Notes / limitations to know about
-
-- **NAT traversal:** the free STUN server (`stun.l.google.com`) handles most
-  home/office networks. If a connection won't establish on stricter corporate
-  networks, you'd need a **TURN** server as a relay. Free options: self-host
-  `coturn` on a free-tier VPS, or use metered.ca's free TURN tier (50GB/month).
-  Add it to the `ICE_SERVERS` array in both `config.js` files.
-- **One viewer per session** in this version (keeps it simple/secure). Easy to
-  extend to multiple viewers later if you want.
-- **Security:** codes are single-use random 6-digit numbers and only live while
-  the host is sharing. For anything sensitive, consider adding a password on
-  top of the code, or short code expiry — happy to add that if you want.
-- This is your own private tool — no telemetry, no ads, no account required.
+<p align="center">
+  <b>Developed by <a href="https://github.com/jojin1709">JOJIN JOHN</a></b>
+</p>
