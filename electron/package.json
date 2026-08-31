@@ -16,7 +16,7 @@
     "npmRebuild": false,
     "nodeGypRebuild": false,
     "directories": {
-      "output": "build-output"
+      "output": "dist-final"
     },
     "win": {
       "target": [
@@ -38,6 +38,7 @@
     },
     "files": [
       "**/*",
+      "!dist-final/*",
       "!build-output/*",
       "!release/*",
       "!dist/*"
