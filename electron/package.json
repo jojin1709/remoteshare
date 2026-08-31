@@ -12,12 +12,16 @@
     "productName": "RemoteShare",
     "npmRebuild": false,
     "nodeGypRebuild": false,
+    "directories": {
+      "output": "release"
+    },
     "win": {
       "target": "portable"
     },
     "files": [
       "**/*",
-      "!dist/*"
+      "!dist/*",
+      "!release/*"
     ]
   },
   "dependencies": {
