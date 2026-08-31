@@ -1,5 +1,17 @@
 (() => {
-  const socket = io(window.SIGNALING_SERVER_URL);
+  const serverUrl = window.SIGNALING_SERVER_URL || (window.location.origin.startsWith("http") ? window.location.origin : "https://remoteshare-ykpm.onrender.com");
+  const socket = io(serverUrl, {
+    transports: ["websocket", "polling"],
+    reconnection: true,
+  });
+
+  socket.on("connect", () => {
+    console.log("[Viewer] Connected to signaling server:", serverUrl, "ID:", socket.id);
+  });
+
+  socket.on("connect_error", (err) => {
+    console.warn("[Viewer] Signaling server connection error:", err.message);
+  });
 
   const joinCard = document.getElementById("joinCard");
   const stageCard = document.getElementById("stageCard");

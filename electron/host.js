@@ -1,5 +1,17 @@
 (() => {
-  const socket = io(window.SIGNALING_SERVER_URL);
+  const serverUrl = window.SIGNALING_SERVER_URL || "https://remoteshare-ykpm.onrender.com";
+  const socket = io(serverUrl, {
+    transports: ["websocket", "polling"],
+    reconnection: true,
+  });
+
+  socket.on("connect", () => {
+    console.log("[Host] Connected to signaling server:", serverUrl, "ID:", socket.id);
+  });
+
+  socket.on("connect_error", (err) => {
+    console.warn("[Host] Signaling server connection error:", err.message);
+  });
 
   const sourceGrid = document.getElementById("sourceGrid");
   const startBtn = document.getElementById("startBtn");

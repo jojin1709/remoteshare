@@ -15,7 +15,10 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*" }, // fine for a signaling-only server
+  cors: { origin: "*" },
+  transports: ["websocket", "polling"],
+  pingInterval: 10000,
+  pingTimeout: 5000,
 });
 
 const PORT = process.env.PORT || 4000;
@@ -74,9 +77,11 @@ io.on("connection", (socket) => {
   socket.on("viewer:join", ({ code }, callback) => {
     const room = rooms.get(code);
     if (!room) {
+      console.log(`[viewer:join-failed] code=${code} not found. Active rooms:`, Array.from(rooms.keys()));
       return callback({ success: false, error: "Invalid or expired code." });
     }
     if (room.viewerSocketId) {
+      console.log(`[viewer:join-failed] code=${code} room full`);
       return callback({ success: false, error: "Session already has a viewer connected." });
     }
 
