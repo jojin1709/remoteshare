@@ -9,7 +9,7 @@
 [![Download Windows Installer](https://img.shields.io/badge/Download-Windows%20Setup%20(Installer)-2563EB?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/jojin1709/remoteshare/releases/latest/download/RemoteShare-Setup-v1.0.0-Windows.exe)
 [![Download Portable Version](https://img.shields.io/badge/Download-Portable%20.exe-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/jojin1709/remoteshare/releases/latest/download/RemoteShare-Portable-v1.0.0-Windows.exe)
 [![Live Web Viewer](https://img.shields.io/badge/Live-Web%20Viewer-00C7B7?style=for-the-badge&logo=googlechrome&logoColor=white)](https://remoteshare-ykpm.onrender.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-red.svg?style=for-the-badge)](LICENSE)
 
 <br />
 
@@ -114,17 +114,22 @@ RemoteShare uses a decoupled, lightweight signaling topology:
 
 - **Zero-Knowledge Signaling:** The signaling server only brokers the connection; it never sees, buffers, or records your video stream.
 - **Ephemeral Session Codes:** Random 6-digit codes exist only while the session is active and expire immediately upon disconnect.
-- **End-to-End Encryption:** WebRTC peer-to-peer data channels and media tracks are encrypted by default using standard DTLS/SRTP encryption.
+- **End-to-End Encryption:** WebRTC peer-to-peer data channels and media tracks are encrypted by default.
+
+## Legal & Governance
+
+- 📄 [**License Agreement**](LICENSE) — Proprietary Software License. Copyright © 2026 JOJIN JOHN.
+- 🤝 [**Code of Conduct**](CODE_OF_CONDUCT.md) — Community pledge and standards.
+- 🔒 [**Security Policy**](SECURITY.md) — Vulnerability reporting guidelines.
+- 🛡️ [**Privacy Policy**](PRIVACY.md) — Zero-telemetry, direct P2P encryption guarantee.
 
 ---
-
-## About the Developer
 
 <div align="center">
 
 **Developed with ❤️ by [JOJIN JOHN](https://github.com/jojin1709)**
 
-*Software Engineer · Cybersecurity Enthusiast · Full Stack Developer*
+*For questions, enterprise inquiries, or feedback, please open a GitHub Discussion.*
 
 [![GitHub: jojin1709](https://img.shields.io/badge/GitHub-jojin1709-181717?style=for-the-badge&logo=github)](https://github.com/jojin1709)
 
